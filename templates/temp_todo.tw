@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8">
+	<title>ToDo</title>
+	<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+	<header>
+		<hgroup>
+			<h1>TODO (список дел)</h1>
+		</hgroup>
+		<nav>
+			<div class="main-menu">
+				<ul class="main-menu-ul">
+					<li><a href="logout.php">выход</a></li>
+				</ul>
+			</div>
+		</nav>
+	</header>
+	<article class="container-fluid">
+		<div class="search-form">
+			<form enctype="multipart/form-data" action="todo.php" method="post">
+				<div class="search-form-group">
+					<label for="addTask">добавить задачу</label>
+					<input type="text" pattern="[a-zA-Zа-яА-Я0-9 -_]*" name="addTask" placeholder="Описание задачи" value="">
+					<button type="submit">добавить</button>
+				</div>
+			</form>
+			<form enctype="multipart/form-data" action="todo.php" method="POST">
+				<div class="search-form-group">
+					<label for="sort_by">сортировать по:</label>
+					<select class="sort" name="sort_by">
+			            <option value="date_added">дате добавления</option>
+			            <option value="is_done">статусу</option>
+			            <option value="description">описанию</option>
+			        </select>
+        			<button type="submit" name="sort" value="сортировать">сортировать</button>
+				</div>
+			</form>
+		</div>
+	</article>
+	<article class="container-fluid">
+		<div class="list">
+			<table class="list-table">
+				<tr>
+					<th></th>
+					<th class="th-title">описание задачи</th>
+					<th>дата добавления</th>
+					<th>статус</th>		
+					<th>Ответственный</th>
+					<th>Автор</th>
+					<th>Закрепить задачу за пользователем</th>
+				</tr>
+				{% for row in tasks_rows %}
+				<tr>
+					<td class="t-center">{{ row.id }}</td>
+					<td class="td-title">{{ row.description }}</td>
+					<td class="t-center">{{ row.date_added }}</td>
+					{% if row.is_done == '0' %}
+					<td>в процессе</td>
+					{% else %}
+					<td>готово</td>
+					{% endif %}
+					<td class="t-center">{{ row.login }}</td>
+					<td class="t-center">{{ session }}</td>
+					<td>
+						<form enctype="multipart/form-data" action="todo.php" method="POST">
+							<div class="select-form-group">
+								<select class="select-login" name="login_select">
+					{% for log in logins_rows %}
+						            <option value="{{ log.id }}">{{ log.login }}</option>
+					{% endfor %}
+						        </select>
+						        <button class="select-user-button" type="submit" name="select_user_button" value="{{ row.id }}"><img src="img/tick.png" alt=""></button>
+							</div>
+						</form>
+					</td>
+				</tr>
+			{% endfor %}
+			</table>
+		</div>
+	</article>
+	<article class="container-fluid">
+		<div class="article-title">
+			<h2 class="h2-article">Задачи, где Вы являетесь ответственным исполнителем:</h2>
+		</div>
+		<div class="list">
+			<table class="list-table">
+				<tr>
+					<th></th>
+					<th class="th-title">описание задачи</th>
+					<th>дата добавления</th>
+					<th>статус</th>
+					<th>Автор</th>
+					<th>Сменить статус</th>
+				</tr>
+				{% for task in assigned_tasks_rows %}
+				<tr>
+					<td class="t-center">{{ task.id }}</td>
+					<td class="td-title">{{ task.description }}</td>
+					<td class="t-center">{{ task.date_added }}</td>
+					{% if task.is_done == '0' %}
+					<td>в процессе</td>
+					{% else %}
+					<td>готово</td>
+					{% endif %}
+					<td class="t-center">{{ task.login }}</td>
+					<td class="t-center">
+						<a href="todo.php?id={{ task.id }}&step=done">
+							<img  class="action" src="img/tick.png">
+						</a>
+					</td>
+				</tr>
+			{% endfor %}
+			</table>
+		</div>
+	</article>
+	<footer>
+		<div class="end-phrase">"Вологодские леса" @ 2016</div>
+	</footer>
+</body>
+</html>
